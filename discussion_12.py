@@ -2,7 +2,7 @@ import unittest
 import sqlite3
 import json
 import os
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # starter code
 
 # Create Database
@@ -16,7 +16,9 @@ def setUpDatabase(db_name):
 # TASK 1
 # CREATE TABLE FOR EMPLOYEE INFORMATION IN DATABASE AND ADD INFORMATION
 def create_employee_table(cur, conn):
-    pass
+    cur.execute("CREATE TABLE IF NOT EXISTS employees (employee_id INTEGER PRIMARY KEY, first_name TEXT, \
+        last_name TEXT, job_id INTEGER, hire_date DATE, salary INTEGER)")
+    conn.commit()
 
 # ADD EMPLOYEE'S INFORMTION TO THE TABLE
 
@@ -26,12 +28,25 @@ def add_employee(filename, cur, conn):
     f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), filename)))
     file_data = f.read()
     f.close()
+
     # THE REST IS UP TO YOU
-    pass
+    employee_data = json.loads(file_data)
+    for person in employee_data:
+        cur.execute("INSERT OR IGNORE INTO employees (employee_id, first_name, last_name, job_id, hire_date, salary) VALUES (?,?,?,?,?,?)",(person['employee_id'], person['first_name'], person['last_name'], person['job_id'], person['hire_date'], person['salary']))
+    conn.commit()
 
 # TASK 2: GET JOB AND HIRE_DATE INFORMATION
 def job_and_hire_date(cur, conn):
-    pass
+    cur.execute("SELECT Employees.hire_date and Jobs.job_title FROM Employees JOIN Jobs ON Jobs.job_id = Employees.job_id")
+    res = cur.fetchall()
+    print(res)
+    conn.commit()
+
+    s = sorted(res, key = lambda x: x[0])
+
+    return s[0][1]
+
+
 
 # TASK 3: IDENTIFY PROBLEMATIC SALARY DATA
 # Apply JOIN clause to match individual employees
